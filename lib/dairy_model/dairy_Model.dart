@@ -1,11 +1,14 @@
-class Work{
-  final String workName;
-  final String workDescription;
+class Catagory{
+  final String catagory;
 
-  Work({
-    required this.workName,
-    required this.workDescription
+  Catagory({
+    required this.catagory,
+
 });
-
+  Map<String,dynamic> toMap(Catagory catagory){
+    return {
+      "id" : catagory,
+    };
+  }
 }
 
