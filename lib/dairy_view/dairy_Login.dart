@@ -8,6 +8,8 @@ class DairyLogin extends StatefulWidget{
 
 }
 class _DairyLogin extends State<DairyLogin>{
+  String stuId = "jaitn";
+  int pass = 123 ;
   TextEditingController nameController = TextEditingController();
   TextEditingController stuIdController = TextEditingController();
   TextEditingController passController = TextEditingController();
@@ -29,7 +31,7 @@ class _DairyLogin extends State<DairyLogin>{
         leading: Icon(Icons.login_rounded),
         title: const Text("Login ",style: TextStyle(color: Colors.white,fontSize: 15),),
       ),
-      body: Center(
+      body: Form(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,

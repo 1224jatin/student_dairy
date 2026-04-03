@@ -12,31 +12,36 @@ class HomeScreen extends StatefulWidget{
 }
 class _HomeScreen extends State<HomeScreen> {
   final dbhelper = Dbhelper();
-  TextEditingController catogaryName = TextEditingController();
   late final vm = Provider.of<DairyVm>(context);
+  TextEditingController taskNameController = TextEditingController();
+  TextEditingController selectCetagoryController =TextEditingController();
+  TextEditingController taskDescriptionController = TextEditingController();
+  TextEditingController isCompletedController = TextEditingController();
+  List<String> categories= [];
+  TextEditingController addCategoryController = TextEditingController();
+
  late String username;
  Future <void> handleName()async {
      final SharedPreferences prefs = await SharedPreferences.getInstance();
      username = await prefs.getString("Name")?? "user";
  }
-  final List<String> workGrid=[];
 
   @override
-  void initState(){
-    super.initState();
-    loadWork();
-  }
-  Future<void> loadWork() async {
-    final data = await Dbhelper().insertCatagory();
-    setState(() {
-      workGrid=data;
-    });
-  }
+  initDb(){
+   super.initState();
+   loadCategories();
+ }
+  Future<void> loadCategories() async {
+   final data = await dbhelper.selectTask();
+   setState(() {
+     categories=data.cast<String>();
+   });
+ }
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.handshake),
-        title: Text(username,
+        title: Text("${username} , ADD YOU TASK",
             style: TextStyle(
                 color: Colors.white,fontSize: 15
             )
@@ -47,22 +52,32 @@ class _HomeScreen extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2),
-                itemCount: workGrid.length,
-                itemBuilder: (context,index){
-              return Container(
-                height: 400,
-                width: 400,
-                child: Card(
-                  color: Colors.black26,
-                  child: Text(workGrid[index]),
+            Card(
+              color: Colors.black12,
+              child: TextField(
+                controller: taskNameController,
+                decoration: InputDecoration(
+                  label: const Text("Task Name =")
                 ),
-              );
+              ),
+            ),
+            //select category
+            Card(
+              child:
+            ),
+            Card(
+              color: Colors.black12,
+              child: TextField(
+                controller: taskDescriptionController,
+                maxLines: 4,
+                decoration: InputDecoration(
+                    label: const Text("Task Name ="),
+                ),
+              ),
+            ),
+            ElevatedButton(onPressed:(){
 
-                }),ElevatedButton(onPressed: (){
-
-            }, child: const Text("Add Tasks"))
+            } , child: const Text("Add"))
           ],
         ),
 
@@ -71,29 +86,34 @@ class _HomeScreen extends State<HomeScreen> {
     );
   }
   showDialogBox(){
-    return AlertDialog(
-      title: const Text("ADD Catagory"),
-      content: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        TextField(
-          controller: catogaryName,
-          decoration: InputDecoration(
-            label: const Text("Add catogory"),
-            hintText: "DSA"
-          ),
-        ),
-      ],
-      ),
-      actions: [
-        ElevatedButton(onPressed: (){
-          if(catogaryName!= null){
-            dbhelper.insertCatagory(to);
-          }
-        }, child: const Text("ADD"))
-      ],
-    );
+   AlertDialog(
+     title: const Text("Add catagory") ,
+     content: Column(
+       mainAxisAlignment: MainAxisAlignment.center,
+       crossAxisAlignment: CrossAxisAlignment.center,
+       children: [
+         Card(
+           color: Colors.black12,
+           child: TextField(
+             controller: addCategoryController,
+             decoration: InputDecoration(
+                 label:  const Text("Category =  ")
+             ),
+           ),
+         )
+       ],
+     ),
+     actions: [
+       ElevatedButton(onPressed: (){
+         if(addCategoryController != null ){
+           dbhelper.insertCategory(
+             "CatId": [CatID]["CatID"],
+             "CategoryName": addCategoryController.text,
+           );
+           loadCategories();
+         }
+       }, child: const Text("ADD"))
+     ],
+   );
   }
-
 }
