@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_dairy/dairy_Vm/dairy_Vm.dart';
+import 'package:student_dairy/dairy_model/dairy_Model.dart';
 import 'package:student_dairy/dbHelper/dbHelper.dart';
 
 class HomeScreen extends StatefulWidget{
@@ -34,14 +35,14 @@ class _HomeScreen extends State<HomeScreen> {
   Future<void> loadCategories() async {
    final data = await dbhelper.selectTask();
    setState(() {
-     categories=data.cast<String>();
+
    });
  }
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.handshake),
-        title: Text("${username} , ADD YOU TASK",
+        title: Text("${username} , ADD YOU TASK . ",
             style: TextStyle(
                 color: Colors.white,fontSize: 15
             )
@@ -63,8 +64,7 @@ class _HomeScreen extends State<HomeScreen> {
             ),
             //select category
             Card(
-              child:
-            ),
+              ),
             Card(
               color: Colors.black12,
               child: TextField(
@@ -95,6 +95,7 @@ class _HomeScreen extends State<HomeScreen> {
          Card(
            color: Colors.black12,
            child: TextField(
+
              controller: addCategoryController,
              decoration: InputDecoration(
                  label:  const Text("Category =  ")
@@ -107,8 +108,7 @@ class _HomeScreen extends State<HomeScreen> {
        ElevatedButton(onPressed: (){
          if(addCategoryController != null ){
            dbhelper.insertCategory(
-             "CatId": [CatID]["CatID"],
-             "CategoryName": addCategoryController.text,
+             Categories(category: addCategoryController.text)
            );
            loadCategories();
          }
