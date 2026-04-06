@@ -5,9 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dairy_view/dairy_Login.dart';
 import 'dairy_view/dairy_Register.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
