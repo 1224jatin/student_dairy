@@ -10,8 +10,6 @@ class DairyRegister extends StatefulWidget{
 }
 class _DairyRegister extends State<DairyRegister>{
   final firebaseAuthService = Authservice();
-  String stuId = "jaitn";
-  int pass = 123 ;
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();

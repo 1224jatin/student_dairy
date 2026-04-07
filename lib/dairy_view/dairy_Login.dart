@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:student_dairy/services/AuthService.dart';
 
 import 'dairy_Register.dart';
+import 'home_screen.dart';
 
 class DairyLogin extends StatefulWidget{
 
@@ -45,6 +46,7 @@ class _DairyLogin extends State<DairyLogin>{
             if(emailController != null && passController != null){
               firebaseAuth.loginUser(emailController.text, passController.text);
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${emailController.text} is login successfully....!!")));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
             }
           }, child: const Text("Submit")),
           InkWell(

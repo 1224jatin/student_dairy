@@ -18,25 +18,25 @@ class Categories{
 class Task{
   int? taskId;
   final String taskName;
-  final int catId;
+  //final int catId;
   final String taskDescription;
-  final bool isCompleted;
+  //final bool isCompleted;
 
   Task({
-    required this.taskId,
+    this.taskId,
     required this.taskName,
-    required this.catId,
+    //required this.catId,
     required this.taskDescription,
-    required this.isCompleted
+    //required this.isCompleted
 });
 
   Map<String,dynamic> toMapTasks(){
     return {
       "taskId": taskId,
       "taskName": taskName,
-      "catID" : catId,
+      //"catID" : catId,
       "taskDescription": taskDescription,
-      "isCompleted": isCompleted,
+      //"isCompleted": isCompleted,
     };
 
   }

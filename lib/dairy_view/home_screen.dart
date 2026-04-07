@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_dairy/dairy_Vm/dairy_Vm.dart';
 import 'package:student_dairy/dairy_model/dairy_Model.dart';
+import 'package:student_dairy/dairy_view/taskScreen.dart';
 import 'package:student_dairy/dbHelper/dbHelper.dart';
 
 class HomeScreen extends StatefulWidget{
@@ -12,32 +14,43 @@ class HomeScreen extends StatefulWidget{
 
 }
 class _HomeScreen extends State<HomeScreen> {
-  final dbhelper = Dbhelper();
-  late final vm = Provider.of<DairyVm>(context);
+
   TextEditingController taskNameController = TextEditingController();
   TextEditingController selectCetagoryController =TextEditingController();
   TextEditingController taskDescriptionController = TextEditingController();
   TextEditingController isCompletedController = TextEditingController();
-  List<String> categories= [];
+  List<String> categoriesList= [];
   TextEditingController addCategoryController = TextEditingController();
+  final  firestore = FirebaseFirestore.instance;
 
- late String username;
+  String username = "jatin";
  Future <void> handleName()async {
      final SharedPreferences prefs = await SharedPreferences.getInstance();
      username = await prefs.getString("Name")?? "user";
  }
 
-  @override
+  /*@override
   initDb(){
    super.initState();
    loadCategories();
  }
   Future<void> loadCategories() async {
-   final data = await dbhelper.selectTask();
    setState(() {
 
    });
  }
+ */
+
+  Future<void> addTask(Task task) async {
+     await firestore.collection("tasks").add({
+      "taskId":firestore.collection("tasks").doc().id,
+      "taskName":task.taskName,
+      "taskDesc":task.taskDescription
+    });
+
+  }
+
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -63,8 +76,12 @@ class _HomeScreen extends State<HomeScreen> {
               ),
             ),
             //select category
-            Card(
-              ),
+            /*Card(
+              child: ElevatedButton(onPressed: (){
+                 showDialogBoxforAddCategories(context);
+              }, child: const Text("add categorie")),
+
+              ),*/
             Card(
               color: Colors.black12,
               child: TextField(
@@ -75,45 +92,54 @@ class _HomeScreen extends State<HomeScreen> {
                 ),
               ),
             ),
-            ElevatedButton(onPressed:(){
+            ElevatedButton(onPressed:() {
+
+              if(taskNameController.text !=null && taskDescriptionController.text!=null){
+                addTask(Task(taskName: taskNameController.text, taskDescription: taskDescriptionController.text));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Taskscreen()));
+              }
+
+
 
             } , child: const Text("Add"))
           ],
         ),
-
-
       ),
     );
   }
-  showDialogBox(){
-   AlertDialog(
-     title: const Text("Add catagory") ,
-     content: Column(
-       mainAxisAlignment: MainAxisAlignment.center,
-       crossAxisAlignment: CrossAxisAlignment.center,
-       children: [
-         Card(
-           color: Colors.black12,
-           child: TextField(
 
-             controller: addCategoryController,
-             decoration: InputDecoration(
-                 label:  const Text("Category =  ")
+
+   /*void showDialogBoxforAddCategories (BuildContext contex){
+   showDialog(context: context, builder: (BuildContext context){
+     return AlertDialog(
+       title: const Text("Add catagory"),
+       content: Column(
+         mainAxisAlignment: MainAxisAlignment.center,
+         crossAxisAlignment: CrossAxisAlignment.center,
+         children: [
+           Card(
+             color: Colors.black12,
+             child: TextField(
+
+               controller: addCategoryController,
+               decoration: InputDecoration(
+                   label: const Text("Category =  ")
+               ),
              ),
-           ),
-         )
+           )
+         ],
+       ),
+       actions: [
+         ElevatedButton(onPressed: () {
+           if (addCategoryController != null) {
+             FirebaseFirestore.instance.collection("categories").add({
+               "category": addCategoryController.text,
+               "catId": FirebaseFirestore.instance.doc("categories").id,
+             });
+           }
+         }, child: const Text("ADD"))
        ],
-     ),
-     actions: [
-       ElevatedButton(onPressed: (){
-         if(addCategoryController != null ){
-           dbhelper.insertCategory(
-             Categories(category: addCategoryController.text)
-           );
-           loadCategories();
-         }
-       }, child: const Text("ADD"))
-     ],
-   );
-  }
+     );
+   });
+   }*/
 }
