@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_dairy/services/AuthService.dart';
+
+import 'dairy_Login.dart';
 
 class DairyRegister extends StatefulWidget{
   @override
@@ -9,7 +13,7 @@ class DairyRegister extends StatefulWidget{
 
 }
 class _DairyRegister extends State<DairyRegister>{
-  final firebaseAuthService = Authservice();
+  late final firebaseAuthService = Authservice();
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
@@ -27,7 +31,7 @@ class _DairyRegister extends State<DairyRegister>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black45,
+        backgroundColor: Color(0xFF02034C),
         leading: Icon(Icons.login_rounded),
         title: const Text("Login ",style: TextStyle(color: Colors.white,fontSize: 15),),
       ),
@@ -79,9 +83,36 @@ class _DairyRegister extends State<DairyRegister>{
                 ),
               ),
             ),
-            ElevatedButton(onPressed: (){
-              firebaseAuthService.createUser(emailController.text, passController.text);
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("you are Register !")));
+            ElevatedButton(onPressed: () async {
+
+              if(emailController.text != null && passController.text!= null){
+                /*FirebaseFirestore.instance.collection("Users").add({
+                  "id" : FirebaseFirestore.instance.collection("Users").doc().id,
+                  "email": emailController,
+                  "password": passController
+                });*/
+
+                try {
+
+                  UserCredential result = await firebaseAuthService.createUser(emailController.text, passController.text);
+                  User? user = result.user;
+
+                  if(user != null){
+                    FirebaseFirestore.instance.collection("Users").add({
+                      "userId":FirebaseFirestore.instance.collection("Users").doc().id,
+                      "userEmail":emailController.text,
+                      "userName":nameController.text,
+                    });
+                  }
+                }catch(e){
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(" Firebase Errros 0 "),duration: Duration(seconds: 5),));
+                }
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>DairyLogin()));
+
+
+
+              }
+
 
             },
                 child: const Text("Submit")),

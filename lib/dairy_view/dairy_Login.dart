@@ -43,12 +43,18 @@ class _DairyLogin extends State<DairyLogin>{
             ),
           ),
           ElevatedButton(onPressed: (){
-            if(emailController != null && passController != null){
-              firebaseAuth.loginUser(emailController.text, passController.text);
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${emailController.text} is login successfully....!!")));
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
+            try {
+              if(emailController != null && passController != null){
+                firebaseAuth.loginUser(emailController.text, passController.text);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${emailController.text} is login successfully....!!")));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
+              }
+            }catch(e){
+              print(e);
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("error - ${e}")));
             }
           }, child: const Text("Submit")),
+
           InkWell(
             child: Text("dont Have any account / click to register"),
             onTap: (){

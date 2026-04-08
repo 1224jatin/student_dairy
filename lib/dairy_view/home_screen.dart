@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,11 +24,11 @@ class _HomeScreen extends State<HomeScreen> {
   TextEditingController addCategoryController = TextEditingController();
   final  firestore = FirebaseFirestore.instance;
 
-  String username = "jatin";
+  /*String username = "jatin";
  Future <void> handleName()async {
      final SharedPreferences prefs = await SharedPreferences.getInstance();
      username = await prefs.getString("Name")?? "user";
- }
+ }*/
 
   /*@override
   initDb(){
@@ -55,7 +56,7 @@ class _HomeScreen extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.handshake),
-        title: Text("${username} , ADD YOU TASK . ",
+        title: Text(" ADD YOU TASK . ",
             style: TextStyle(
                 color: Colors.white,fontSize: 15
             )
@@ -95,13 +96,28 @@ class _HomeScreen extends State<HomeScreen> {
             ElevatedButton(onPressed:() {
 
               if(taskNameController.text !=null && taskDescriptionController.text!=null){
-                addTask(Task(taskName: taskNameController.text, taskDescription: taskDescriptionController.text));
+                try {
+                  firestore.collection("Task").add({
+                    "taskId":firestore.collection("Task").doc().id,
+                    "userId" : FirebaseAuth.instance.currentUser?.uid,
+                    "taskName":taskNameController.text,
+                    "taskDesc":taskDescriptionController.text
+                  });
+
+                }catch (e){
+
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("error ${e}")));
+                }
+
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>Taskscreen()));
               }
 
 
 
-            } , child: const Text("Add"))
+            } , child: const Text("Add")),
+            ElevatedButton(onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>Taskscreen()));
+            }, child: Text("Navigate to List "))
           ],
         ),
       ),
