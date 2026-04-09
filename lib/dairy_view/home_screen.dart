@@ -105,7 +105,7 @@ class _HomeScreen extends State<HomeScreen> {
                   });
 
                 }catch (e){
-
+                  print(e);
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("error ${e}")));
                 }
 
