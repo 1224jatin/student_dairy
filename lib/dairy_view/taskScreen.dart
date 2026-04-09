@@ -32,7 +32,6 @@ class _Taskscreen extends State<Taskscreen> {
           tasks = querySnapshots.docs
               .map((doc) => doc.data() as Map<String, dynamic>)
               .toList();
-          isLoading = false;
         });
       } else {
         setState(() => isLoading = false);
