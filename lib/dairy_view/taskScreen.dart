@@ -1,93 +1,79 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Taskscreen extends StatefulWidget{
+class Taskscreen extends StatefulWidget {
+  const Taskscreen({super.key});
+
   @override
   State<StatefulWidget> createState() => _Taskscreen();
 }
-class _Taskscreen extends State<Taskscreen>{
-  late List<Map<String,dynamic>> tasks = [];
+
+class _Taskscreen extends State<Taskscreen> {
+  List<Map<String, dynamic>> tasks = [];
+  bool isLoading = true;
 
   @override
-  void initState(){
+  void initState() {
+    super.initState();
     getTasks();
   }
 
-  Future<void>getTasks() async {
-     // tasks = (await FirebaseFirestore.instance.collection("tasks").get()) as Map<String, dynamic>;
+  Future<void> getTasks() async {
+    try {
+      final String? uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        QuerySnapshot querySnapshots = await FirebaseFirestore.instance
+            .collection("Task")
+            .where("userId", isEqualTo: uid)
+            .get();
 
-    try{
-      var user = FirebaseAuth.instance.currentUser?.uid;
-      if(user != null ){
-
-        QuerySnapshot querySnapshots =  await FirebaseFirestore.instance.collection("Task").where("userId",isEqualTo: FirebaseAuth.instance.currentUser?.uid).get();
         setState(() {
-
-          tasks = querySnapshots.docs.map((doc) => doc.data().toString()).cast<Map<String, dynamic>>().toList();
-
+          tasks = querySnapshots.docs
+              .map((doc) => doc.data() as Map<String, dynamic>)
+              .toList();
+          isLoading = false;
         });
-
-      }else{
-        print(" Error fethcvhing ");
+      } else {
+        setState(() => isLoading = false);
       }
-
-    }catch(e){
-      print("${e}");
+    } catch (e) {
+      print("Error fetching tasks: $e");
+      setState(() => isLoading = false);
     }
-
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(child:
-            ListView.builder(itemBuilder: (context,index) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Card(
-                    color: Colors.black12,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+      body:ListView.builder(
+                  itemCount: tasks.length,
+                  itemBuilder: (context, index) {
+                    final task = tasks[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      color: Colors.black12,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Task Name =  ${tasks[index]["taskName"]}"),
-
+                            Text(
+                              "Task Name: ${task["taskName"]}",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              "Description: ${task["taskDescription"]}",
+                              style: const TextStyle(color: Colors.black87),
+                            ),
                           ],
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text("Task Description"),
-                            Text("")
-                          ],
-                        )
-                      ],
-                    ),
-                  )
-                ]
-              );
-
-            },
-              itemCount: tasks.length,
-            ))
-          ],
-        ),
-      ),
+                      ),
+                    );
+                  },
+                ),
     );
   }
-
-
 }
