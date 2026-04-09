@@ -5,10 +5,10 @@ class Authservice {
   final auth= FirebaseAuth.instance;
 
   Future<dynamic> createUser( String email, String password) async{
-    return auth.createUserWithEmailAndPassword( email: email, password: password);
+    return await auth.createUserWithEmailAndPassword( email: email, password: password);
   }
-  Future<void> loginUser(String email , String password ) async {
-    auth.signInWithEmailAndPassword(email: email, password: password);
+  Future<dynamic> loginUser(String email , String password ) async {
+    return await auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
 
